@@ -1,26 +1,18 @@
 import React, {useEffect} from 'react';
-import {StyleSheet, Platform} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {WebView} from 'react-native-webview';
-import {request, PERMISSIONS} from 'react-native-permissions';
+import {useCameraPermission} from 'react-native-vision-camera';
 
 export default function App() {
-  const requestPermission = () => {
-    let permissionType = null;
-    if (Platform.OS === 'ios') {
-      permissionType = PERMISSIONS.IOS.CAMERA;
-    } else if (Platform.OS === 'android') {
-      permissionType = PERMISSIONS.ANDROID.CAMERA;
-    }
-
-    if (permissionType) {
-      request(permissionType).then(result => {
-        console.log(result);
-      });
-    }
-  };
+  const {hasPermission, requestPermission} = useCameraPermission();
 
   useEffect(() => {
-    requestPermission();
+    const getPermission = async () => {
+      if (!hasPermission) {
+        await requestPermission();
+      }
+    };
+    getPermission();
   }, []);
 
   return (
